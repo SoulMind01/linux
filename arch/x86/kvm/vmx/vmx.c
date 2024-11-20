@@ -1,3 +1,49 @@
+#define KVM_EXIT_MAX 40
+static int total_exits = 0;
+static int exit_counters[KVM_EXIT_MAX] = { 0 };
+
+static const char *exit_names[KVM_EXIT_MAX] = {
+	"UNKNOWN",
+	"EXCEPTION",
+	"IO",
+	"HYPERCALL",
+	"DEBUG",
+	"HLT",
+	"MMIO",
+	"IRQ_WINDOW_OPEN",
+	"SHUTDOWN",
+	"FAIL_ENTRY",
+	"INTR",
+	"SET_TPR",
+	"TPR_ACCESS",
+	"S390_SIEIC",
+	"S390_RESET",
+	"DCR",
+	"NMI",
+	"INTERNAL_ERROR",
+	"OSI",
+	"PAPR_HCALL",
+	"S390_UCONTROL",
+	"WATCHDOG",
+	"S390_TSCH",
+	"EPR",
+	"SYSTEM_EVENT",
+	"S390_STSI",
+	"IOAPIC_EOI",
+	"HYPERV",
+	"ARM_NISV",
+	"X86_RDMSR",
+	"X86_WRMSR",
+	"DIRTY_RING_FULL",
+	"AP_RESET_HOLD",
+	"X86_BUS_LOCK",
+	"XEN",
+	"RISCV_SBI",
+	"RISCV_CSR",
+	"NOTIFY",
+	"LOONGARCH_IOCSR",
+	"MEMORY_FAULT",
+};
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Kernel-based Virtual Machine driver for Linux
@@ -6629,6 +6675,22 @@ unexpected_vmexit:
 
 int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
+	// Count eeach exit type
+	int exit_reason = to_vmx(vcpu)->exit_reason.basic;
+	if (exit_reason < KVM_EXIT_MAX) {
+		exit_counters[exit_reason]++;
+	}
+	total_exits++;
+
+	// Log every 10000 exits
+	if (total_exits % 10000 == 0) {
+		printk(KERN_INFO "Total Exits: %d\n", total_exits);
+		for (int i = 0; i < KVM_EXIT_MAX; i++) {
+			if (exit_counters[i] > 0) {
+				printk(KERN_INFO "Exit Type %d (%s): %d\n", i, exit_names[i], exit_counters[i]);
+			}
+		}
+	}
 	int ret = __vmx_handle_exit(vcpu, exit_fastpath);
 
 	/*
