@@ -72,4 +72,4 @@ The number of exits increases steadily over time during VM operations. There are
 # 4. 
 X86_WRMSR is the most frequent exit type with a count exceeding 158,000.
 
-X86_RDMSR is the least since there are 2 exits observed.
+DIRTY_RING_FULL is the least since there are 2 exits observed.
