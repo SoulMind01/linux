@@ -66,3 +66,10 @@ building and installing the new kernel containing the changes, reebooting the ou
 - ![alt text](ba9c9ccb-9a8d-4b4d-b75c-0ed26ea9e43d.png)
 - ![alt text](53c249f6-a987-405a-a45a-2b8ee97d004b.png)
 
+# 3. Comment on the Frequency of Exits
+The number of exits increases steadily over time during VM operations. There are spikes in the number of exits during specific operations, such as when the VM is booting or performing high I/O or CPU-intensive tasks. Booting the vm will incur about 150000 exits.
+
+# 4. 
+X86_WRMSR is the most frequent exit type with a count exceeding 158,000.
+
+X86_RDMSR is the least since there are 2 exits observed.
